@@ -26,7 +26,7 @@ def load_data(data_dir, batch_size, split):
     data_loader = DataLoader(
         data,
         batch_size=batch_size,
-        shuffle=False,
+        shuffle=True,
         num_workers=0
     )
     return data_loader
@@ -47,10 +47,10 @@ def val(data_loader, device):
     return val_acc
 
 def train(model, data_loader, device, num_epochs):
-    model.train()
     best_acc = 0.0
     history_train_acc, history_val_acc, history_train_loss = [], [], []
     for epoch in range(num_epochs):
+        model.train()
         t0 = time.time()
         train_acc = 0.0
         train_loss = 0.0
@@ -70,9 +70,9 @@ def train(model, data_loader, device, num_epochs):
 
             sys.stdout.write('\r[Epoch: %d/%d - Batch: %d/%d]' % (epoch+1, num_epochs, i, len(data_loader)))
 
-        exp_lr_scheduler.step()
+        # exp_lr_scheduler.step()
 
-        train_loss = 100 * train_loss / 64000
+        train_loss = train_loss / 64000
         train_acc = 100 *  train_acc / 64000
         val_acc = val(data_loader_val, device)
 
@@ -119,7 +119,7 @@ if __name__ == '__main__':
     # Load pre-trained model
     model = Model().to(args.device)
 
-    optimizer = Adam(model.parameters(), lr=0.001, weight_decay=0.0001)
+    optimizer = Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
     exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=40, gamma=0.1)
     loss_fn = nn.CrossEntropyLoss()
     torch.backends.cudnn.benchmark = True

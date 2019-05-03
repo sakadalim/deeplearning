@@ -65,13 +65,13 @@ class Model(nn.Module):
         else:
             print("No weights found. Starting Fresh")
 
-    def load_weights(self, pretrained_model_path, cuda=True):
+    def load_weights(self, pretrained_model_path, cuda=torch.cuda.is_available()):
         # Load pretrained model
         pretrained_model = torch.load(f=pretrained_model_path, map_location="cuda" if cuda else "cpu")
 
         # Load pre-trained weights in current model
         with torch.no_grad():
-            self.load_state_dict(pretrained_model, strict=True)
+            self.load_state_dict(pretrained_model, strict=torch.cuda.is_available())
 
         # Debug loading
         print('Parameters found in pretrained model:')

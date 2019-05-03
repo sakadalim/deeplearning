@@ -2,6 +2,7 @@ from model import Model
 import argparse
 import json
 import torch
+import time
 
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
@@ -32,7 +33,7 @@ def evaluate(model, data_loader, device, split, top_k=5):
     n_samples = 0.
     n_correct_top_1 = 0
     n_correct_top_k = 0
-
+    t0 = time.time()
     for img, target in data_loader:
         img, target = img.to(device), target.to(device)
         batch_size = img.size(0)
@@ -57,6 +58,7 @@ def evaluate(model, data_loader, device, split, top_k=5):
     # Log
     print(f'{split} top 1 accuracy: {top_1_acc:.4f}')
     print(f'{split} top {top_k} accuracy: {top_k_acc:.4f}')
+    print(f'Time Elapsed: {time.time()-t0}s')
 
 
 if __name__ == '__main__':
